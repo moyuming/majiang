@@ -53,6 +53,31 @@
         </div>
       </div>
     </div>
+    <div class="mahjong-row">
+      <div class="tiles-row">
+        <div 
+          class="mahjong-tile" 
+          :class="{ 'selected': currentPosition == 'L' }"
+          @click="currentPosition = 'L'"
+        >
+          <div class="tile-content">{{ positions.L }}</div>
+        </div>
+        <div 
+          class="mahjong-tile" 
+          :class="{ 'selected': currentPosition == 'F' }"
+          @click="currentPosition = 'F'"
+        >
+          <div class="tile-content">{{ positions.F }}</div>
+        </div>
+        <div 
+          class="mahjong-tile" 
+          :class="{ 'selected': currentPosition == 'R' }"
+          @click="currentPosition = 'R'"
+        >
+          <div class="tile-content">{{ positions.R }}</div>
+        </div>
+      </div>
+    </div>
     <!-- 全局操作区 -->
     <div class="control-panel">
       <div class="global-buttons">
@@ -75,6 +100,12 @@ export default {
         tiao: Array(9).fill(0),
         wan: Array(9).fill(0)
       },
+      positions: {
+        L: '',
+        R: '',
+        F: ''
+      },
+      currentPosition: '',
       selectedTile: null // 存储选中的牌 {type, index, name}
     }
   },
@@ -82,6 +113,11 @@ export default {
     // 选择牌型
     selectTile(type, index, name) {
       this.selectedTile = { type, index, name }
+      if(this.currentPosition){
+        this.positions[this.currentPosition] = name
+        this.currentPosition = ''
+      }
+      this.$set(this.counts[type], index, Math.min(4, this.counts[type][index] + 1))
     },
     
     // 检查牌型是否被选中
@@ -116,6 +152,12 @@ export default {
       this.counts.tiao = Array(9).fill(0)
       this.counts.wan = Array(9).fill(0)
       this.selectedTile = null
+      this.positions = {
+        L: '',
+        R: '',
+        F: ''
+      }
+      this.currentPosition = ''
     }
   }
 }
@@ -123,9 +165,10 @@ export default {
 
 <style scoped>
 .app-container {
-  max-width: 1200px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
+  padding-top: 30px;
+  width: 800px;
+  transform: rotate(90deg);
+  transform-origin: 186px 186px;
 }
 
 h1 {
@@ -147,12 +190,7 @@ h3 {
 
 /* 控制面板样式 */
 .control-panel {
-  background-color: #f8f8f8;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  
 }
 
 .global-buttons {
@@ -186,7 +224,7 @@ h3 {
 
 /* 行样式 */
 .mahjong-row {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .tiles-row {
@@ -207,7 +245,8 @@ h3 {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s;
-  width: 75px;
+  width: 70px;
+  height: 54px;
 }
 
 .mahjong-tile:hover {
