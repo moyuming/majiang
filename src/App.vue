@@ -90,6 +90,24 @@
 </template>
 
 <script>
+let wakeLock = null;
+const setWakeLock = function () {
+    if (wakeLock) {
+        return;    
+    }
+    navigator.wakeLock.request('screen').then(result => {
+        wakeLock = result;
+        // 提示
+        console.log('唤醒锁定已激活');
+        // 释放的时候也提示下
+        wakeLock.addEventListener('release', () => {
+            wakeLock = null;
+            console.log('唤醒锁定已释放');
+        });
+    }).catch((err) => {
+        console.error(`<span class="red">唤醒锁定失败：${err.message}</span>`);    
+    });
+};
 export default {
   name: 'App',
   data() {
@@ -107,6 +125,19 @@ export default {
       },
       currentPosition: '',
       selectedTile: null // 存储选中的牌 {type, index, name}
+    }
+  },
+  mounted() {
+    if (navigator.wakeLock) {
+        setWakeLock();
+        // 选项卡切换到当前页面，如果已经释放了熄屏，再次锁定
+        document.addEventListener('visibilitychange', () => {
+          if (wakeLock === null && document.visibilityState === 'visible') {
+            setWakeLock();
+          }
+        });
+    } else {
+        console.error('当前浏览器不支持Screen Wake Lock API！');    
     }
   },
   methods: {
