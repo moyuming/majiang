@@ -86,6 +86,11 @@
         
       </div>
     </div>
+    <div class="history">
+      <div class="history-item">左：<span class="ml3" v-for="tile in LS" :key="tile">{{tile}}</span></div>
+      <div class="history-item">前：<span class="ml3" v-for="tile in FS" :key="tile">{{tile}}</span></div>
+      <div class="history-item">右：<span class="ml3" v-for="tile in RS" :key="tile">{{tile}}</span></div>
+    </div>
   </div>
 </template>
 
@@ -124,7 +129,10 @@ export default {
         F: ''
       },
       currentPosition: '',
-      selectedTile: null // 存储选中的牌 {type, index, name}
+      selectedTile: null, // 存储选中的牌 {type, index, name}
+      LS: [],
+      RS: [],
+      FS: []
     }
   },
   mounted() {
@@ -146,6 +154,7 @@ export default {
       this.selectedTile = { type, index, name }
       if(this.currentPosition){
         this.positions[this.currentPosition] = name
+        this[`${this.currentPosition}S`].push(name)
         this.currentPosition = ''
       }
       this.$set(this.counts[type], index, Math.min(4, this.counts[type][index] + 1))
@@ -189,6 +198,9 @@ export default {
         F: ''
       }
       this.currentPosition = ''
+      this.LS = []
+      this.RS = []
+      this.FS = []
     }
   }
 }
@@ -332,6 +344,16 @@ h3 {
 
 .reset-btn:hover {
   background-color: #e68900;
+}
+.history {
+  position: absolute;
+  top: 220px;
+}
+.ml3{
+  margin-left: 3px;
+}
+.history-item {
+  max-width: 270px;
 }
 
 
